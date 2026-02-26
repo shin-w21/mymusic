@@ -4,30 +4,46 @@
 
 <head>
  <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
  <title>My favorite BGM</title>
  <link rel="icon" type="image/png" href="./Photo Folder/favicon.jpeg">
- 
+
+ <!-- PWA / iOS Web App 対応 -->
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ <meta name="apple-mobile-web-app-title" content="My BGM">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="theme-color" content="#0d7377">
+
+ <!-- iOS ホーム画面アイコン -->
+ <link rel="apple-touch-icon" href="./Photo Folder/favicon.jpeg">
+
+ <!-- Web App Manifest（インラインBlob で生成） -->
+ <link rel="manifest" id="manifest-placeholder">
+
  <style>
   * {
    margin: 0;
    padding: 0;
    box-sizing: border-box;
+   -webkit-tap-highlight-color: transparent;
   }
 
   body {
    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
    background: linear-gradient(135deg, #0d7377 0%, #14a085 100%);
    min-height: 100vh;
+   min-height: -webkit-fill-available;
    display: flex;
    flex-direction: column;
    overflow-x: hidden;
+   -webkit-overflow-scrolling: touch;
   }
 
   header {
    background-color: rgba(0, 0, 0, 0.8);
    color: white;
-   padding: 40px 60px;
+   padding: calc(40px + env(safe-area-inset-top)) 60px 40px;
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
    width: 100vw;
    position: relative;
@@ -92,6 +108,16 @@
    transform: translateX(5px);
   }
 
+  @media (hover: none) {
+   .audio-section:hover {
+    background-color: #f8f9fa;
+    transform: none;
+   }
+   .audio-section:active {
+    background-color: #e9ecef;
+   }
+  }
+
   .audio-section p {
    font-size: 16px;
    font-weight: bold;
@@ -105,6 +131,7 @@
    border-radius: 5px;
    outline: none;
    height: 40px;
+   min-height: 40px;
    display: block;
   }
 
@@ -116,7 +143,7 @@
    background-color: rgba(0, 0, 0, 0.9);
    color: white;
    text-align: center;
-   padding: 40px 60px;
+   padding: 40px 60px calc(40px + env(safe-area-inset-bottom));
    margin-top: auto;
    width: 100vw;
    position: relative;
@@ -161,7 +188,7 @@
   /* スマートフォン用 */
   @media (max-width: 599px) {
    header {
-    padding: 30px 20px;
+    padding: calc(30px + env(safe-area-inset-top)) 20px 30px;
    }
 
    header h1 {
@@ -196,8 +223,6 @@
 
 <body>
 
-
-
  <!-- ヘッダー -->
  <header>
   <h1>My favorite BGM</h1>
@@ -207,14 +232,11 @@
  </header>
 
 
-
-
  <!-- メインコンテンツ -->
 
  <div class="container">
   <p class="title01">Music by しゃろう</p>
   <p class="title02"></p>
-
 
   <div class="audio-section">
    <p>superstar</p>
@@ -225,18 +247,12 @@
    <p>You and Me</p>
    <audio src="./Music Folder/0102.mp3" controls loop></audio>
   </div>
-
-  
  </div>
 
 
-
-
-
-<div class="container">
+ <div class="container">
   <p class="title01">Music by 騒音のない世界</p>
   <p class="title02"></p>
-
 
   <div class="audio-section">
    <p>それゆけワンダーランド</p>
@@ -247,47 +263,97 @@
    <p>裸の王様</p>
    <audio src="./Music Folder/0202.mp3" controls loop></audio>
   </div>
-
  </div>
-
 
 
  <div class="container">
   <p class="title01">Music by プロセカ</p>
   <p class="title02"></p>
 
-
   <div class="audio-section">
    <p>Mr. Showtime（Vocal OFF）</p>
    <audio src="./Music Folder/0301.mp3" controls loop></audio>
   </div>
-
  </div>
 
 
-<div class="container">
+ <div class="container">
   <p class="title01">Music by 呼び込みくん</p>
   <p class="title02"></p>
-
 
   <div class="audio-section">
    <p>呼び込みくん</p>
    <audio src="./Music Folder/0401.mp3" controls loop></audio>
   </div>
-
  </div>
-
- 
-
-
-
-
 
 
  <!-- フッター -->
  <footer>
   <p>&copy;sh1n*</p>
  </footer>
+
+ <script>
+  // ── Web App Manifest をインラインBlobで生成・注入 ──
+  const manifestData = {
+   name: "My favorite BGM",
+   short_name: "My BGM",
+   description: "sh1n* のお気に入りBGMプレイヤー",
+   start_url: "./index.html",
+   display: "standalone",
+   background_color: "#0d7377",
+   theme_color: "#0d7377",
+   orientation: "portrait-primary",
+   icons: [
+    { src: "./Photo Folder/favicon.jpeg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
+    { src: "./Photo Folder/favicon.jpeg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+   ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+  document.getElementById('manifest-placeholder').href = URL.createObjectURL(manifestBlob);
+
+  // ── Service Worker をインラインBlobで生成・登録 ──
+  if ('serviceWorker' in navigator) {
+   const swCode = `
+    const CACHE_NAME = 'my-bgm-v1';
+    self.addEventListener('install', event => {
+     self.skipWaiting();
+    });
+    self.addEventListener('activate', event => {
+     event.waitUntil(
+      caches.keys().then(keys =>
+       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      )
+     );
+     self.clients.claim();
+    });
+    self.addEventListener('fetch', event => {
+     // 音楽ファイルは常にネットワークから取得
+     if (event.request.url.endsWith('.mp3')) {
+      event.respondWith(fetch(event.request));
+      return;
+     }
+     // その他はキャッシュ優先
+     event.respondWith(
+      caches.open('${CACHE_NAME}').then(cache =>
+       cache.match(event.request).then(cached => {
+        const fetched = fetch(event.request).then(res => {
+         cache.put(event.request, res.clone());
+         return res;
+        });
+        return cached || fetched;
+       })
+      )
+     );
+    });
+   `;
+   const swBlob = new Blob([swCode], { type: 'application/javascript' });
+   navigator.serviceWorker.register(URL.createObjectURL(swBlob), { scope: './' })
+    .then(reg => console.log('SW registered:', reg.scope))
+    .catch(err => console.warn('SW registration failed:', err));
+  }
+ </script>
+
 </body>
 
 </html>
