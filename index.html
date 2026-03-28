@@ -1,376 +1,485 @@
 <!DOCTYPE html>
-
 <html lang="ja">
-
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
- <title>My favorite BGM</title>
- <link rel="icon" type="image/png" href="./Photo Folder/favicon.jpeg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>My favorite BGM</title>
+  <link rel="icon" type="image/png" href="./Photo Folder/favicon.jpeg">
 
- <!-- PWA / iOS Web App 対応 -->
- <meta name="apple-mobile-web-app-capable" content="yes">
- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
- <meta name="apple-mobile-web-app-title" content="My BGM">
- <meta name="mobile-web-app-capable" content="yes">
- <meta name="theme-color" content="#0d7377">
+  <!-- PWA / iOS Web App 対応 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My BGM">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#071a0e">
 
- <!-- iOS ホーム画面アイコン -->
- <link rel="apple-touch-icon" href="./Photo Folder/favicon.jpeg">
+  <!-- iOS ホーム画面アイコン -->
+  <link rel="apple-touch-icon" href="./Photo Folder/favicon.jpeg">
+  <link rel="manifest" id="manifest-placeholder">
 
- <!-- Web App Manifest（インラインBlob で生成） -->
- <link rel="manifest" id="manifest-placeholder">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
 
- <style>
-  * {
-   margin: 0;
-   padding: 0;
-   box-sizing: border-box;
-   -webkit-tap-highlight-color: transparent;
-  }
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-bg-strong: rgba(255, 255, 255, 0.14);
+      --glass-border: rgba(255, 255, 255, 0.22);
+      --glass-border-light: rgba(255, 255, 255, 0.12);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --glass-shadow-deep: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --blur: blur(28px) saturate(180%);
+      --blur-strong: blur(40px) saturate(200%);
+      --text-primary: rgba(255, 255, 255, 0.95);
+      --text-secondary: rgba(255, 255, 255, 0.6);
+      --text-tertiary: rgba(255, 255, 255, 0.35);
+      --accent: rgba(100, 230, 160, 0.85);
+      --accent-glow: rgba(80, 200, 130, 0.3);
+      --font: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    }
 
-  body {
-   font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-   background: linear-gradient(135deg, #0d7377 0%, #14a085 100%);
-   min-height: 100vh;
-   min-height: -webkit-fill-available;
-   display: flex;
-   flex-direction: column;
-   overflow-x: hidden;
-   -webkit-overflow-scrolling: touch;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  header {
-   background-color: rgba(0, 0, 0, 0.8);
-   color: white;
-   padding: calc(40px + env(safe-area-inset-top)) 60px 40px;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-   width: 100vw;
-   position: relative;
-   left: 50%;
-   right: 50%;
-   margin-left: -50vw;
-   margin-right: -50vw;
-  }
+    html {
+      scroll-behavior: smooth;
+    }
 
-  header h1 {
-   font-size: 28px;
-   margin-bottom: 10px;
-   letter-spacing: 2px;
-  }
+    body {
+      font-family: var(--font);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background: #050f08;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
 
-  header nav p {
-   font-size: 14px;
-   color: #ccc;
-   letter-spacing: 1px;
-  }
+    /* ── Animated background orbs ── */
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-  .container {
-   flex: 1;
-   max-width: 100%;
-   margin: 20px 15px;
-   padding: 30px 20px;
-   background-color: white;
-   border-radius: 15px;
-   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      animation: drift linear infinite;
+    }
 
-  .title01 {
-   font-size: 32px;
-   font-weight: bold;
-   text-align: center;
-   color: #0d7377;
-   margin-bottom: 10px;
-   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #1a6e3a 0%, #0d4020 60%, transparent 100%);
+      top: -15%; left: -10%;
+      animation-duration: 22s;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #2dbd72 0%, #127040 60%, transparent 100%);
+      top: 30%; right: -8%;
+      animation-duration: 18s;
+      animation-delay: -7s;
+    }
+    .orb-3 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #0e8c4a 0%, #064d28 60%, transparent 100%);
+      bottom: -20%; left: 20%;
+      animation-duration: 26s;
+      animation-delay: -13s;
+    }
+    .orb-4 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #4ecb8d 0%, #1a7a46 60%, transparent 100%);
+      top: 55%; left: 5%;
+      animation-duration: 20s;
+      animation-delay: -4s;
+    }
 
-  .title02 {
-   font-size: 24px;
-   font-weight: bold;
-   text-align: center;
-   color: #0a5458;
-   margin-bottom: 30px;
-   padding-bottom: 15px;
-   border-bottom: 3px solid #14a085;
-  }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(40px, -30px) scale(1.05); }
+      50% { transform: translate(-20px, 50px) scale(0.95); }
+      75% { transform: translate(30px, 20px) scale(1.02); }
+    }
 
-  .audio-section {
-   margin: 20px 0;
-   padding: 20px;
-   background-color: #f8f9fa;
-   border-radius: 10px;
-   border-left: 5px solid #0d7377;
-   transition: all 0.3s ease;
-  }
+    /* ── Noise texture overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
 
-  .audio-section:hover {
-   background-color: #e9ecef;
-   transform: translateX(5px);
-  }
+    /* ── Layout ── */
+    .page-wrapper {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  @media (hover: none) {
-   .audio-section:hover {
-    background-color: #f8f9fa;
-    transform: none;
-   }
-   .audio-section:active {
-    background-color: #e9ecef;
-   }
-  }
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: calc(env(safe-area-inset-top) + 16px) 28px 16px;
+      backdrop-filter: var(--blur-strong);
+      -webkit-backdrop-filter: var(--blur-strong);
+      background: rgba(5, 15, 8, 0.55);
+      border-bottom: 1px solid var(--glass-border-light);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06), var(--glass-shadow);
+    }
 
-  .audio-section p {
-   font-size: 16px;
-   font-weight: bold;
-   color: #333;
-   margin-bottom: 12px;
-  }
+    header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
+    }
 
-  audio {
-   width: 100%;
-   margin-top: 5px;
-   border-radius: 5px;
-   outline: none;
-   height: 40px;
-   min-height: 40px;
-   display: block;
-  }
+    header nav p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
 
-  audio::-webkit-media-controls-panel {
-   background-color: #0d7377;
-  }
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-  footer {
-   background-color: rgba(0, 0, 0, 0.9);
-   color: white;
-   text-align: center;
-   padding: 40px 60px calc(40px + env(safe-area-inset-bottom));
-   margin-top: auto;
-   width: 100vw;
-   position: relative;
-   left: 50%;
-   right: 50%;
-   margin-left: -50vw;
-   margin-right: -50vw;
-  }
+    /* ── Glass Card ── */
+    .glass-card {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 24px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease,
+                  background 0.3s ease;
+    }
 
-  footer p {
-   margin: 5px 0;
-   font-size: 14px;
-  }
+    /* Specular highlight top edge */
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent);
+      border-radius: 50%;
+    }
 
-  footer p:first-child {
-   font-size: 12px;
-   color: #aaa;
-  }
+    /* Inner glow bottom */
+    .glass-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: linear-gradient(to top, rgba(255,255,255,0.03), transparent);
+      border-radius: 0 0 20px 20px;
+      pointer-events: none;
+    }
 
-  footer p:last-child {
-   font-weight: bold;
-   letter-spacing: 1px;
-  }
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
 
-  /* タブレット用 */
-  @media (min-width: 600px) and (max-width: 1024px) {
-   .container {
-    margin: 25px 30px;
-    padding: 35px 25px;
-   }
-  }
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--glass-border-light);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
 
-  /* PC・大画面用 */
-  @media (min-width: 1025px) {
-   .container {
-    max-width: 100%;
-    margin: 20px 40px;
-    padding: 40px 60px;
-   }
-  }
+    /* ── Track row ── */
+    .track {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      transition: background 0.2s ease, transform 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* スマートフォン用 */
-  @media (max-width: 599px) {
-   header {
-    padding: calc(30px + env(safe-area-inset-top)) 20px 30px;
-   }
+    .track:last-child { margin-bottom: 0; }
 
-   header h1 {
-    font-size: 22px;
-   }
+    .track::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--accent), rgba(120,200,255,0.2));
+      border-radius: 3px 0 0 3px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
 
-   .container {
-    margin: 15px 10px;
-    padding: 25px 15px;
-   }
+    .track:hover { background: rgba(255,255,255,0.09); }
+    .track:hover::before { opacity: 1; }
 
-   .title01 {
-    font-size: 26px;
-   }
+    @media (hover: none) {
+      .track:hover { background: rgba(255,255,255,0.05); }
+      .track:active { background: rgba(255,255,255,0.1); transform: scale(0.99); }
+    }
 
-   .title02 {
-    font-size: 20px;
-   }
+    .track-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.1px;
+    }
 
-   .audio-section {
-    padding: 12px;
-    margin: 15px 0;
-   }
+    /* ── Audio element ── */
+    audio {
+      width: 100%;
+      height: 36px;
+      border-radius: 8px;
+      outline: none;
+      display: block;
+      accent-color: var(--accent);
+      filter: invert(0);
+    }
 
-   .audio-section p {
-    font-size: 14px;
-   }
-  }
- </style>
+    /* WebKit audio controls tinting */
+    audio::-webkit-media-controls-panel {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+    }
+    audio::-webkit-media-controls-play-button,
+    audio::-webkit-media-controls-mute-button {
+      filter: invert(1) brightness(0.9);
+    }
+    audio::-webkit-media-controls-timeline,
+    audio::-webkit-media-controls-volume-slider {
+      accent-color: rgba(120,200,255,0.9);
+    }
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
+      color: var(--text-tertiary);
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      border-top: 1px solid var(--glass-border-light);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(5,15,8,0.4);
+    }
+
+    footer p { margin: 3px 0; }
+
+    /* ── Tablet ── */
+    @media (min-width: 600px) {
+      main { padding: 32px 24px; gap: 24px; }
+      .glass-card { padding: 28px 24px; border-radius: 24px; }
+    }
+
+    /* ── Desktop ── */
+    @media (min-width: 1025px) {
+      main {
+        padding: 40px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-items: start;
+      }
+      .glass-card { border-radius: 28px; }
+    }
+
+    /* ── Entry animations ── */
+    .glass-card {
+      animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .glass-card:nth-child(1) { animation-delay: 0.05s; }
+    .glass-card:nth-child(2) { animation-delay: 0.12s; }
+    .glass-card:nth-child(3) { animation-delay: 0.19s; }
+    .glass-card:nth-child(4) { animation-delay: 0.26s; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    header {
+      animation: fadeDown 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 
-
 <body>
-
- <!-- ヘッダー -->
- <header>
-  <h1>My favorite BGM</h1>
-  <nav>
-   <p>Made by sh1n*</p>
-  </nav>
- </header>
-
-
- <!-- メインコンテンツ -->
-
- <div class="container">
-  <p class="title01">Music by しゃろう</p>
-  <p class="title02"></p>
-
-  <div class="audio-section">
-   <p>superstar</p>
-   <audio src="./Music Folder/0101.mp3" controls loop></audio>
+  <!-- Animated background -->
+  <div class="bg-scene">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
   </div>
 
-  <div class="audio-section">
-   <p>You and Me</p>
-   <audio src="./Music Folder/0102.mp3" controls loop></audio>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header>
+      <h1>My favorite BGM</h1>
+      <nav><p>Made by sh1n*</p></nav>
+    </header>
+
+    <!-- Main -->
+    <main>
+
+      <div class="glass-card">
+        <p class="card-title">しゃろう</p>
+        <p class="card-subtitle">Music</p>
+        <div class="track">
+          <span class="track-name">superstar</span>
+          <audio src="./Music Folder/0101.mp3" controls loop></audio>
+        </div>
+        <div class="track">
+          <span class="track-name">You and Me</span>
+          <audio src="./Music Folder/0102.mp3" controls loop></audio>
+        </div>
+        <div class="track">
+          <span class="track-name">Cassette Tape Dream</span>
+          <audio src="./Music Folder/0103.mp3" controls loop></audio>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <p class="card-title">騒音のない世界</p>
+        <p class="card-subtitle">Music</p>
+        <div class="track">
+          <span class="track-name">それゆけワンダーランド</span>
+          <audio src="./Music Folder/0201.mp3" controls loop></audio>
+        </div>
+        <div class="track">
+          <span class="track-name">裸の王様</span>
+          <audio src="./Music Folder/0202.mp3" controls loop></audio>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <p class="card-title">プロセカ</p>
+        <p class="card-subtitle">Music</p>
+        <div class="track">
+          <span class="track-name">Mr. Showtime（Vocal OFF）</span>
+          <audio src="./Music Folder/0301.mp3" controls loop></audio>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <p class="card-title">集客BGM</p>
+        <p class="card-subtitle">Music</p>
+        <div class="track">
+          <span class="track-name">呼び込みくん</span>
+          <audio src="./Music Folder/0401.mp3" controls loop></audio>
+        </div>
+        <div class="track">
+          <span class="track-name">排除くん</span>
+          <audio src="./Music Folder/0402.mp3" controls loop></audio>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; sh1n*</p>
+    </footer>
   </div>
 
-  <div class="audio-section">
-   <p>Cassette Tape Dream</p>
-   <audio src="./Music Folder/0103.mp3" controls loop></audio>
-  </div>
+  <script>
+    // ── Web App Manifest (Blob) ──
+    const manifestData = {
+      name: "My favorite BGM",
+      short_name: "My BGM",
+      description: "sh1n* のお気に入りBGMプレイヤー",
+      start_url: "./index.html",
+      display: "standalone",
+      background_color: "#050f08",
+      theme_color: "#050f08",
+      orientation: "portrait-primary",
+      icons: [
+        { src: "./Photo Folder/favicon.jpeg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
+        { src: "./Photo Folder/favicon.jpeg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+      ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+    document.getElementById('manifest-placeholder').href = URL.createObjectURL(manifestBlob);
 
-  
- </div>
-
-
- <div class="container">
-  <p class="title01">Music by 騒音のない世界</p>
-  <p class="title02"></p>
-
-  <div class="audio-section">
-   <p>それゆけワンダーランド</p>
-   <audio src="./Music Folder/0201.mp3" controls loop></audio>
-  </div>
-
-  <div class="audio-section">
-   <p>裸の王様</p>
-   <audio src="./Music Folder/0202.mp3" controls loop></audio>
-  </div>
-
-  
- </div>
-
-
- <div class="container">
-  <p class="title01">Music by プロセカ</p>
-  <p class="title02"></p>
-
-  <div class="audio-section">
-   <p>Mr. Showtime（Vocal OFF）</p>
-   <audio src="./Music Folder/0301.mp3" controls loop></audio>
-  </div>
-
-  
- </div>
-
-
- <div class="container">
-  <p class="title01">Music by 集客BGM</p>
-  <p class="title02"></p>
-
-  <div class="audio-section">
-   <p>呼び込みくん</p>
-   <audio src="./Music Folder/0401.mp3" controls loop></audio>
-  </div>
-
-  <div class="audio-section">
-   <p>排除くん</p>
-   <audio src="./Music Folder/0402.mp3" controls loop></audio>
-  </div>
-  
- </div>
-
-
- <!-- フッター -->
- <footer>
-  <p>&copy;sh1n*</p>
- </footer>
-
- <script>
-  // ── Web App Manifest をインラインBlobで生成・注入 ──
-  const manifestData = {
-   name: "My favorite BGM",
-   short_name: "My BGM",
-   description: "sh1n* のお気に入りBGMプレイヤー",
-   start_url: "./index.html",
-   display: "standalone",
-   background_color: "#0d7377",
-   theme_color: "#0d7377",
-   orientation: "portrait-primary",
-   icons: [
-    { src: "./Photo Folder/favicon.jpeg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
-    { src: "./Photo Folder/favicon.jpeg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
-   ]
-  };
-  const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-  document.getElementById('manifest-placeholder').href = URL.createObjectURL(manifestBlob);
-
-  // ── Service Worker をインラインBlobで生成・登録 ──
-  if ('serviceWorker' in navigator) {
-   const swCode = `
-    const CACHE_NAME = 'my-bgm-v1';
-    self.addEventListener('install', event => {
-     self.skipWaiting();
-    });
-    self.addEventListener('activate', event => {
-     event.waitUntil(
-      caches.keys().then(keys =>
-       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-      )
-     );
-     self.clients.claim();
-    });
-    self.addEventListener('fetch', event => {
-     // 音楽ファイルは常にネットワークから取得
-     if (event.request.url.endsWith('.mp3')) {
-      event.respondWith(fetch(event.request));
-      return;
-     }
-     // その他はキャッシュ優先
-     event.respondWith(
-      caches.open('${CACHE_NAME}').then(cache =>
-       cache.match(event.request).then(cached => {
-        const fetched = fetch(event.request).then(res => {
-         cache.put(event.request, res.clone());
-         return res;
+    // ── Service Worker (Blob) ──
+    if ('serviceWorker' in navigator) {
+      const CACHE_NAME = 'my-bgm-v2';
+      const swCode = `
+        const CACHE_NAME = '${CACHE_NAME}';
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => {
+          e.waitUntil(caches.keys().then(keys =>
+            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+          ));
+          self.clients.claim();
         });
-        return cached || fetched;
-       })
-      )
-     );
-    });
-   `;
-   const swBlob = new Blob([swCode], { type: 'application/javascript' });
-   navigator.serviceWorker.register(URL.createObjectURL(swBlob), { scope: './' })
-    .then(reg => console.log('SW registered:', reg.scope))
-    .catch(err => console.warn('SW registration failed:', err));
-  }
- </script>
-
+        self.addEventListener('fetch', e => {
+          if (e.request.url.endsWith('.mp3')) {
+            e.respondWith(fetch(e.request)); return;
+          }
+          e.respondWith(
+            caches.open(CACHE_NAME).then(cache =>
+              cache.match(e.request).then(cached => {
+                const fetched = fetch(e.request).then(res => { cache.put(e.request, res.clone()); return res; });
+                return cached || fetched;
+              })
+            )
+          );
+        });
+      `;
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(swBlob), { scope: './' })
+        .then(r => console.log('SW registered:', r.scope))
+        .catch(e => console.warn('SW failed:', e));
+    }
+  </script>
 </body>
-
 </html>
