@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>My favorite BGM</title>
+  <title>My stage BGM</title>
   <link rel="icon" type="image/png" href="./Photo Folder/favicon.jpeg">
 
   <!-- PWA / iOS Web App 対応 -->
@@ -44,9 +44,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font);
@@ -79,39 +77,35 @@
       width: 600px; height: 600px;
       background: radial-gradient(circle, #1a6e3a 0%, #0d4020 60%, transparent 100%);
       top: -15%; left: -10%;
-      animation-duration: 22s;
-      animation-delay: 0s;
+      animation-duration: 22s; animation-delay: 0s;
     }
     .orb-2 {
       width: 500px; height: 500px;
       background: radial-gradient(circle, #2dbd72 0%, #127040 60%, transparent 100%);
       top: 30%; right: -8%;
-      animation-duration: 18s;
-      animation-delay: -7s;
+      animation-duration: 18s; animation-delay: -7s;
     }
     .orb-3 {
       width: 700px; height: 700px;
       background: radial-gradient(circle, #0e8c4a 0%, #064d28 60%, transparent 100%);
       bottom: -20%; left: 20%;
-      animation-duration: 26s;
-      animation-delay: -13s;
+      animation-duration: 26s; animation-delay: -13s;
     }
     .orb-4 {
       width: 400px; height: 400px;
       background: radial-gradient(circle, #4ecb8d 0%, #1a7a46 60%, transparent 100%);
       top: 55%; left: 5%;
-      animation-duration: 20s;
-      animation-delay: -4s;
+      animation-duration: 20s; animation-delay: -4s;
     }
 
     @keyframes drift {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(40px, -30px) scale(1.05); }
-      50% { transform: translate(-20px, 50px) scale(0.95); }
-      75% { transform: translate(30px, 20px) scale(1.02); }
+      25%       { transform: translate(40px, -30px) scale(1.05); }
+      50%       { transform: translate(-20px, 50px) scale(0.95); }
+      75%       { transform: translate(30px, 20px) scale(1.02); }
     }
 
-    /* ── Noise texture overlay ── */
+    /* ── Noise texture ── */
     body::after {
       content: '';
       position: fixed;
@@ -142,7 +136,47 @@
       background: rgba(5, 15, 8, 0.55);
       border-bottom: 1px solid var(--glass-border-light);
       box-shadow: 0 1px 0 rgba(255,255,255,0.06), var(--glass-shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-direction: row-reverse;
     }
+
+    /* ── Hamburger button ── */
+    .menu-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      cursor: pointer;
+      gap: 5px;
+      padding: 9px 8px;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .menu-btn:hover { background: rgba(255,255,255,0.13); }
+    .menu-btn:active { background: rgba(255,255,255,0.18); transform: scale(0.95); }
+
+    .menu-btn span {
+      display: block;
+      width: 18px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 2px;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease, width 0.3s ease;
+      transform-origin: center;
+    }
+    .menu-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .menu-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .header-text { flex: 1; }
 
     header h1 {
       font-size: 17px;
@@ -156,6 +190,136 @@
       color: var(--text-tertiary);
       margin-top: 2px;
       letter-spacing: 0.5px;
+    }
+
+    /* ── Drawer overlay ── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── Drawer panel ── */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(300px, 82vw);
+      height: 100%;
+      z-index: 210;
+      background: rgba(6, 18, 10, 0.92);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-left: 1px solid rgba(255,255,255,0.1);
+      box-shadow: -4px 0 40px rgba(0,0,0,0.5);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top);
+      overflow: hidden;
+    }
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    /* Drawer orb decoration */
+    .drawer::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: -80px;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(45,189,114,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    .drawer-header {
+      padding: 24px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .drawer-header .drawer-logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.2px;
+    }
+    .drawer-header .drawer-sub {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    .drawer-nav {
+      flex: 1;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+      text-align: left;
+      width: 100%;
+      transition: background 0.2s ease, color 0.2s ease;
+      position: relative;
+    }
+    .drawer-nav-item:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+    .drawer-nav-item:active { background: rgba(255,255,255,0.11); transform: scale(0.98); }
+    .drawer-nav-item.active {
+      background: rgba(100,230,160,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(100,230,160,0.18);
+    }
+    .drawer-nav-item.active .nav-icon { opacity: 1; }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .drawer-footer {
+      padding: 16px 24px calc(env(safe-area-inset-bottom) + 16px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Pages ── */
+    .page {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+    .page.active {
+      display: flex;
     }
 
     /* ── Main ── */
@@ -183,7 +347,6 @@
                   background 0.3s ease;
     }
 
-    /* Specular highlight top edge */
     .glass-card::before {
       content: '';
       position: absolute;
@@ -193,7 +356,6 @@
       border-radius: 50%;
     }
 
-    /* Inner glow bottom */
     .glass-card::after {
       content: '';
       position: absolute;
@@ -265,7 +427,6 @@
       letter-spacing: -0.1px;
     }
 
-    /* ── Audio element ── */
     audio {
       width: 100%;
       height: 36px;
@@ -273,10 +434,8 @@
       outline: none;
       display: block;
       accent-color: var(--accent);
-      filter: invert(0);
     }
 
-    /* WebKit audio controls tinting */
     audio::-webkit-media-controls-panel {
       background: rgba(255,255,255,0.08);
       backdrop-filter: blur(10px);
@@ -293,6 +452,309 @@
     audio::-webkit-media-controls-current-time-display,
     audio::-webkit-media-controls-time-remaining-display {
       color: rgba(255,255,255,0.7);
+    }
+
+    /* ── About Page ── */
+    .about-main {
+      flex: 1;
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .about-hero {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent);
+    }
+
+    .avatar-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, rgba(100,230,160,0.6), rgba(45,189,114,0.3));
+      border: 2px solid rgba(100,230,160,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 0 24px rgba(100,230,160,0.25);
+    }
+
+    .about-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .about-handle {
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .about-bio {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .about-section {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4) 50%, transparent);
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 5px 12px;
+      background: rgba(100,230,160,0.1);
+      border: 1px solid rgba(100,230,160,0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      color: rgba(180,255,210,0.85);
+      letter-spacing: 0.2px;
+    }
+
+    .about-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .about-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .about-list li::before {
+      content: '♪';
+      color: var(--accent);
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Details Page ── */
+    .details-main {
+      flex: 1;
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .details-hero {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .details-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent);
+    }
+
+    .details-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+
+    .details-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat-card {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.12);
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4) 50%, transparent);
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.4px;
+    }
+
+    .details-section {
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .details-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4) 50%, transparent);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .detail-row:first-child { padding-top: 0; }
+
+    .detail-key {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.2px;
+    }
+
+    .detail-val {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+      letter-spacing: 0.1px;
+    }
+
+    .tracklist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .tracklist-item:last-child { border-bottom: none; }
+
+    .tracklist-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(100,230,160,0.12);
+      border: 1px solid rgba(100,230,160,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--accent);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .tracklist-info { flex: 1; }
+
+    .tracklist-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .tracklist-artist {
+      font-size: 11px;
+      color: var(--text-tertiary);
     }
 
     /* ── Footer ── */
@@ -312,8 +774,8 @@
 
     /* ── Tablet ── */
     @media (min-width: 600px) {
-      main { padding: 32px 24px; gap: 24px; }
-      .glass-card { padding: 28px 24px; border-radius: 24px; }
+      main, .about-main, .details-main { padding: 32px 24px; gap: 24px; }
+      .glass-card, .about-section, .details-section { padding: 28px 24px; border-radius: 24px; }
     }
 
     /* ── Desktop ── */
@@ -325,16 +787,22 @@
         align-items: start;
       }
       .glass-card { border-radius: 28px; }
+      .about-main, .details-main { padding: 40px; max-width: 700px; margin: 0 auto; width: 100%; }
     }
 
     /* ── Entry animations ── */
-    .glass-card {
+    .glass-card,
+    .about-hero, .about-section,
+    .details-hero, .stat-card, .details-section {
       animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    .glass-card:nth-child(1) { animation-delay: 0.05s; }
+    .glass-card:nth-child(1), .about-hero, .details-hero { animation-delay: 0.05s; }
     .glass-card:nth-child(2) { animation-delay: 0.12s; }
     .glass-card:nth-child(3) { animation-delay: 0.19s; }
     .glass-card:nth-child(4) { animation-delay: 0.26s; }
+    .about-section:nth-child(2), .stat-card:nth-child(1), .stat-card:nth-child(2) { animation-delay: 0.12s; }
+    .about-section:nth-child(3), .details-section:nth-child(1) { animation-delay: 0.19s; }
+    .about-section:nth-child(4), .details-section:nth-child(2) { animation-delay: 0.26s; }
 
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(24px) scale(0.97); }
@@ -348,8 +816,24 @@
       from { opacity: 0; transform: translateY(-12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* Page transition */
+    .page.active main,
+    .page.active .about-main,
+    .page.active .details-main {
+      animation: pageFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
   </style>
 </head>
+
+
+
+
 
 <body>
   <!-- Animated background -->
@@ -360,82 +844,218 @@
     <div class="orb orb-4"></div>
   </div>
 
+  <!-- Drawer overlay -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">My stage BGM</div>
+      <div class="drawer-sub">Made by sh1n*</div>
+    </div>
+    <nav class="drawer-nav">
+      <button class="drawer-nav-item active" data-page="home">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        BGM
+      </button>
+
+      <button class="drawer-nav-item" data-page="details">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        サイト詳細
+      </button>
+    </nav>
+    <div class="drawer-footer">© sh1n* · My stage BGM</div>
+  </div>
+
   <div class="page-wrapper">
     <!-- Header -->
     <header>
-      <h1>My favorite BGM</h1>
-      <nav><p>Made by sh1n*</p></nav>
+      <button class="menu-btn" id="menuBtn" aria-label="メニューを開く">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="header-text">
+        <h1 id="pageTitle">My stage BGM</h1>
+        <nav><p>Made by sh1n*</p></nav>
+      </div>
     </header>
 
-    <!-- Main -->
-    <main>
 
-      <div class="glass-card">
-        <p class="card-title">しゃろう</p>
-        <p class="card-subtitle">Music</p>
-        <div class="track">
-          <span class="track-name">superstar</span>
-          <audio src="./Music Folder/0101.mp3" controls loop></audio>
+
+
+    <!-- ── Page: BGM (Home) ── -->
+    <div class="page active" id="page-home">
+      <main>
+        <div class="glass-card">
+          <p class="card-title">しゃろう</p>
+          <p class="card-subtitle">Music</p>
+          <div class="track">
+            <span class="track-name">superstar</span>
+            <audio src="./Music Folder/0101.mp3" controls loop></audio>
+          </div>
+          <div class="track">
+            <span class="track-name">You and Me</span>
+            <audio src="./Music Folder/0102.mp3" controls loop></audio>
+          </div>
+          <div class="track">
+            <span class="track-name">Cassette Tape Dream</span>
+            <audio src="./Music Folder/0103.mp3" controls loop></audio>
+          </div>
         </div>
-        <div class="track">
-          <span class="track-name">You and Me</span>
-          <audio src="./Music Folder/0102.mp3" controls loop></audio>
+
+        <div class="glass-card">
+          <p class="card-title">騒音のない世界</p>
+          <p class="card-subtitle">Music</p>
+          <div class="track">
+            <span class="track-name">それゆけワンダーランド</span>
+            <audio src="./Music Folder/0201.mp3" controls loop></audio>
+          </div>
+          <div class="track">
+            <span class="track-name">裸の王様</span>
+            <audio src="./Music Folder/0202.mp3" controls loop></audio>
+          </div>
         </div>
-        <div class="track">
-          <span class="track-name">Cassette Tape Dream</span>
-          <audio src="./Music Folder/0103.mp3" controls loop></audio>
+
+        <div class="glass-card">
+          <p class="card-title">プロセカ</p>
+          <p class="card-subtitle">Music</p>
+          <div class="track">
+            <span class="track-name">Mr. Showtime（Vocal OFF）</span>
+            <audio src="./Music Folder/0301.mp3" controls loop></audio>
+          </div>
         </div>
+
+        <div class="glass-card">
+          <p class="card-title">集客BGM</p>
+          <p class="card-subtitle">Music</p>
+          <div class="track">
+            <span class="track-name">呼び込みくん</span>
+            <audio src="./Music Folder/0401.mp3" controls loop></audio>
+          </div>
+          <div class="track">
+            <span class="track-name">排除くん</span>
+            <audio src="./Music Folder/0402.mp3" controls loop></audio>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>&copy; sh1n*</p>
+      </footer>
+    </div>
+
+
+
+
+    <!-- ── Page: Site Details ── -->
+    <div class="page" id="page-details">
+      <div class="details-main">
+        <div class="details-hero">
+          <div class="details-title">サイト詳細</div>
+          <p class="details-desc">
+            コンサートや定例会での幕間のBGMとして最適です。<br>
+            ぜひご活用ください。
+          </p>
+        </div>
+
+
+        <div class="details-section">
+          <div class="section-label">基本情報</div>
+          <div class="detail-row">
+            <span class="detail-key">サイト名</span>
+            <span class="detail-val">My stage BGM</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-key">バージョン</span>
+            <span class="detail-val">MsB.26.01.00</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-key">制作者</span>
+            <span class="detail-val">sh1n*</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-key">製作者連絡先</span>
+            <span class="detail-val">Instagram：@shin._.w21</span>
+          </div>
+        </div>
+
+        
+
+
       </div>
 
-      <div class="glass-card">
-        <p class="card-title">騒音のない世界</p>
-        <p class="card-subtitle">Music</p>
-        <div class="track">
-          <span class="track-name">それゆけワンダーランド</span>
-          <audio src="./Music Folder/0201.mp3" controls loop></audio>
-        </div>
-        <div class="track">
-          <span class="track-name">裸の王様</span>
-          <audio src="./Music Folder/0202.mp3" controls loop></audio>
-        </div>
-      </div>
-
-      <div class="glass-card">
-        <p class="card-title">プロセカ</p>
-        <p class="card-subtitle">Music</p>
-        <div class="track">
-          <span class="track-name">Mr. Showtime（Vocal OFF）</span>
-          <audio src="./Music Folder/0301.mp3" controls loop></audio>
-        </div>
-      </div>
-
-      <div class="glass-card">
-        <p class="card-title">集客BGM</p>
-        <p class="card-subtitle">Music</p>
-        <div class="track">
-          <span class="track-name">呼び込みくん</span>
-          <audio src="./Music Folder/0401.mp3" controls loop></audio>
-        </div>
-        <div class="track">
-          <span class="track-name">排除くん</span>
-          <audio src="./Music Folder/0402.mp3" controls loop></audio>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer>
-      <p>&copy; sh1n*</p>
-    </footer>
+      <footer>
+        <p>&copy; sh1n*</p>
+      </footer>
+    </div>
   </div>
 
   <script>
+    // ── Drawer ──
+    const menuBtn      = document.getElementById('menuBtn');
+    const drawer       = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      drawerOverlay.classList.add('open');
+      menuBtn.classList.add('open');
+      menuBtn.setAttribute('aria-label', 'メニューを閉じる');
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      drawerOverlay.classList.remove('open');
+      menuBtn.classList.remove('open');
+      menuBtn.setAttribute('aria-label', 'メニューを開く');
+    }
+
+    menuBtn.addEventListener('click', () => {
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+    drawerOverlay.addEventListener('click', closeDrawer);
+
+    // ── Page switching ──
+    const pageTitles = {
+      home:    'My stage BGM',
+      about:   'About',
+      details: 'サイト詳細'
+    };
+
+    document.querySelectorAll('.drawer-nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.page;
+
+        // Update nav active state
+        document.querySelectorAll('.drawer-nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Show target page
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + target).classList.add('active');
+
+        // Update header title
+        document.getElementById('pageTitle').textContent = pageTitles[target];
+
+        closeDrawer();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+
     // ── Web App Manifest (Blob) ──
     const manifestData = {
-      name: "My favorite BGM",
+      name: "My stage BGM",
       short_name: "My BGM",
-      description: "sh1n* のお気に入りBGMプレイヤー",
+      description: "sh1n* のMy stage BGMプレイヤー",
       start_url: "./index.html",
       display: "standalone",
       background_color: "#050f08",
